@@ -16,7 +16,7 @@ from BeautifulSoup import BeautifulSoup
 import json
 
 def parsePage(pagefile):
-    '''输出python的list类型数据'''
+    '''输出python的list类型数据的json表示'''
 
     soup = BeautifulSoup(pagefile)
     table = soup.findAll('table')[-3]
@@ -32,22 +32,22 @@ def parsePage(pagefile):
 
     time = []
     try:
-        for i in xrange(1, 100, 7):
-            high = trs[i].contents[9].text
-            weight = trs[i + 1].contents[9].text
-            grade = trs[i].contents[13].text
+        for i in xrange(1, 10):
+            grade = trs[i].contents[23].text
+            high = trs[i].contents[7].text
+            weight = trs[i].contents[9].text
             time.append([grade, high, weight])
     except IndexError, e:
         pass
     data = [stuid, name, sex, time]
-    return data
+    return data #返回json格式的数据
 
 
 
 if __name__ == '__main__':
     import fetch
-    data = fetch.fetchPage("0843031062")
-    data = parsePage(data)
+    fetchtool = fetch.fetch()
+    data = fetchtool.fetchPage("1043111063")
     for i in data:
         try:
             if i + ' ':

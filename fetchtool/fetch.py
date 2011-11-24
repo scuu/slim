@@ -14,35 +14,55 @@
 '''
 import urllib2
 import parsePage
-import logging
+import socket
+import threading
 
-def fetchPage(stuid, datalist):
-    '''返回unicode形式的页面源码'''
+datalist = [] #装载抓取到的数据
 
-    url = "http://www.scupec.com:4489/jncx/jncx.asp?textxh="
-    result = urllib2.urlopen(url + stuid, timeout = 5)
-    data = parsePage.parsePage(result.read().decode('gbk'))
-    if data != False:
-        datalist.append(data)
-    else:
-        return False
-    return True
+class fetch(object):
+    def __init__(self, proxy = False):
+        self.collegeEmpty = 0
+        self.pageEmpty = 0
+        if proxy == 'goagent':
+            opener = urllib2.build_opener(urllib2.ProxyHandler({'http':'http://127.0.0.1:8087'}))
+            urllib2.install_opener(opener)
+    def fetchPage(self, stuid):
+        '''返回unicode形式的页面源码'''
 
-def fetchCollege(stuid):
-    datalist = [] #一个学院的数据放进一个列表里面
-    ori_stuid = stuid[0: 7]
-    datafile = open(ori_stuid + '.txt', 'w')
+        url = "http://www.scupec.com:4489/jncx/jncx.asp?textxh="
+        while True:
+            try:
+                result = urllib2.urlopen(url + stuid, timeout = 5)
+                data = parsePage.parsePage(result.read().decode('gbk'))
+            except (urllib2.URLError, socket.timeout):
+                print 'timeout'
+                continue
+            if data:
+                print data
+                datalist.append(data)
+                self.pageEmpty = 0
+                return data
+            else:
+                self.pageEmpty += 1
+                return False
 
-    error = 0
-    try:
-        for i in xrange(999):
-            stuid = ori_stuid + "%03d" % i
+    def fetchCollege(self, ori_stuid):
+        """输入任意一个该学院的学号即可抓取整个学院"""
 
+        ori_stuid = ori_stuid[0: 7]
+        try:
+            for i in xrange(10):
+                stuid = ori_stuid + "%03d" % i
+                t = threading.Thread(target = self.fetchPage, args = (stuid,))
+                t.start()
+                if self.pageEmpty > 10:
+                    raise FetchCollegeError
+        except FetchCollegeError:
+            self.pageEmpty = 0
+            return datalist #抓取完学院后返回datalist
+        finally:
+            print "完成了", ori_stuid
 
-
-    except FetchCollegeError:
-        pass
-    return datalist
 
 
 
@@ -50,5 +70,6 @@ class FetchCollegeError(Exception):
     pass
 
 if __name__ == '__main__':
-    print fetchCollege("1043111063")
+    fetchtool = fetch(proxy = 'goagent')
+    fetchtool.fetchCollege("1043111063")
 
