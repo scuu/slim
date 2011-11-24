@@ -16,13 +16,15 @@ import urllib2
 import parsePage
 import socket
 import threading
+import time
 
-datalist = [] #装载抓取到的数据
 
 class fetch(object):
     def __init__(self, proxy = False):
         self.collegeEmpty = 0
         self.pageEmpty = 0
+        self.datalist = [] #装载抓取到的数据
+        self.THREADLIMIT = 20
         if proxy == 'goagent':
             opener = urllib2.build_opener(urllib2.ProxyHandler({'http':'http://127.0.0.1:8087'}))
             urllib2.install_opener(opener)
@@ -38,8 +40,8 @@ class fetch(object):
                 print 'timeout'
                 continue
             if data:
-                print data
-                datalist.append(data)
+                time.sleep(2) #否则会多线程时打印错误
+                self.datalist.append(data)
                 self.pageEmpty = 0
                 return data
             else:
@@ -51,18 +53,25 @@ class fetch(object):
 
         ori_stuid = ori_stuid[0: 7]
         try:
-            for i in xrange(10):
+            for i in xrange(999):
+                while threading.activeCount() > self.THREADLIMIT:
+                    time.sleep(1)
                 stuid = ori_stuid + "%03d" % i
+                print '正在抓取', stuid
                 t = threading.Thread(target = self.fetchPage, args = (stuid,))
                 t.start()
                 if self.pageEmpty > 10:
                     raise FetchCollegeError
         except FetchCollegeError:
             self.pageEmpty = 0
-            return datalist #抓取完学院后返回datalist
+            return self.datalist #抓取完学院后返回datalist
         finally:
-            print "完成了", ori_stuid
+            print "抓取", ori_stuid, '学院完毕'
 
+    def writeToFile(self, filename = '抓取数据'):
+        with open(filename, 'w') as f:
+            for i in self.datalist:
+                print >> f, i #每个数据一行
 
 
 
@@ -71,5 +80,9 @@ class FetchCollegeError(Exception):
 
 if __name__ == '__main__':
     fetchtool = fetch(proxy = 'goagent')
-    fetchtool.fetchCollege("1043111063")
+    fetchtool.fetchCollege("1043111000")
+    while threading.activeCount() > 1:
+        time.sleep(5)
+    fetchtool.writeToFile('1043111.txt')
+    
 
