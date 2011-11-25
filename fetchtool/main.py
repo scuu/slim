@@ -3,7 +3,7 @@
 '''
 #=============================================================================
 #     FileName: main.py
-#         Desc: 抓取川大体测系统的数据并存档
+#         Desc: 抓取川大体测系统的数据并存档。直接运行此文件即可。
 #       Author: Alsotang
 #        Email: alsotang@gmail.com
 #     HomePage: http://tangzhan.li
@@ -13,8 +13,7 @@
 #=============================================================================
 '''
 
-def main():
-    pass
+import fetch
 
 if __name__ == '__main__':
-    main()
+    fetch.main()
