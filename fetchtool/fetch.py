@@ -122,6 +122,7 @@ class fetch(object):
                 break
         
     def fetchGrade(self, grade):
+        grade = '%02d' % int(grade) #为防止在输入'08'级的时候只输入一个'8'
         with open('college_number.data') as f:
             for i in f.read().split('||'):
                 self.pageEmpty = 0
