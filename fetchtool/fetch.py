@@ -101,7 +101,7 @@ class fetch(object):
         self.iEmpty = 0
         for i in xrange(len(rangee) >= 2 and int(rangee[0:2]) or 8,len(rangee) >= 2 and int(rangee[0:2]) + 1 or 11 ): #例如08,09,10
             self.jEmpty = 0
-            for j in (range(len(rangee) >= 4 and int(rangee[2:4]) or 41, len(rangee) >= 4 and int(rangee[2:4]) + 1 or 50) + [55,]): #例如43,44,45; 硬编码了55
+            for j in (range(len(rangee) >= 4 and int(rangee[2:4]) or 41, len(rangee) >= 4 and int(rangee[2:4]) + 1 or 50)): #例如43,44,45; 硬编码了55
                 self.kEmpty = 0
                 for k in xrange(len(rangee) >= 6 and int(rangee[4:6]) or 1, len(rangee) >= 6 and int(rangee[4:6]) + 1 or 100): #例如03,04,05
                     self.collegeEmpty = 0
@@ -120,7 +120,13 @@ class fetch(object):
                     break
             if self.iEmpty >= 2:
                 break
-         
+        
+    def fetchGrade(self, grade):
+        with open('college_number.data') as f:
+            for i in f.read().split('||'):
+                self.pageEmpty = 0
+                self.currentCollege =  grade + i
+                self.fetchCollege(grade + i)
 
 class FetchCollegeError(Exception):
     pass
@@ -135,13 +141,13 @@ class iError(Exception):
     pass
 
 def main():
-    rangee = raw_input("请输入要抓取的学号范围，\n如：10 or 1043 or 104311 or 1043111: ")
+    grade = raw_input("请输入要抓取的年级，\n如：10, 09: ")
     fetchtool = fetch(proxy = '')
-    fetchtool.fetchRange(rangee)
+    fetchtool.fetchGrade(grade)
 
     while threading.activeCount() > 1:
         time.sleep(5)
-    fetchtool.writeToFile(rangee + '.txt')
+    fetchtool.writeToFile(grade + '.txt')
     
 if __name__ == '__main__':
     main()
