@@ -3,3 +3,6 @@ test*
 *.swp
 *.html
 *.txt
+
+cscope.files
+tags
