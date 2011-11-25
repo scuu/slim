@@ -1,7 +1,7 @@
 Summary
 ====
 
-slim应用的python抓取脚本与相关PHP文件
+slim应用的 1)python抓取脚本 2)相关网页源文件
 
 fetchtool
 ----

@@ -47,7 +47,7 @@ def parsePage(pagefile):
 if __name__ == '__main__':
     import fetch
     fetchtool = fetch.fetch(proxy = "goagent")
-    data = fetchtool.fetchPage("1043111008")
+    data = fetchtool.fetchPage("0943111063")
     for i in data:
         try:
             if i + ' ':
