@@ -36,6 +36,7 @@ def parsePage(pageData = None):
         dataList.append('')
     dataList.append(soup.find(id = 'txtBaseFrom').get('value') or '')
     dataList.append(soup.find(id = 'txtHomeAddr').get('value') or '')
+    #dataList.append(soup.findAll('input')[17].get('value') or '') #抓取家庭住址
     dataList.append(soup.find(id = 'txtICN').get('value') or '')
     dataList.append(soup.find(id = 'txtNation').get('value') or '')
 
