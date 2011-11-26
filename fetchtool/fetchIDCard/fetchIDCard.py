@@ -1,4 +1,17 @@
+#! /usr/bin/env python
 # coding=utf-8
+'''
+#=============================================================================
+#     FileName: fetchIDCard.py
+#         Desc: 抓取学工部的个人信息页面
+#       Author: Alsotang
+#        Email: alsotang@gmail.com
+#     HomePage: http://tangzhan.li
+#      Version: 0.0.1
+#   LastChange: 2011-11-26 20:07:25
+#      History:
+#=============================================================================
+'''
 import mechanize
 import cookielib
 from BeautifulSoup import BeautifulSoup
@@ -13,7 +26,6 @@ class fetchIDCard(object):
         br.set_cookiejar(cj)
 
         br.set_handle_equiv(True)
-        br.set_handle_gzip(True)
         br.set_handle_redirect(True)
         br.set_handle_referer(True)
         br.set_handle_robots(False)
@@ -36,11 +48,15 @@ class fetchIDCard(object):
 
     def parsePage(self, pageData):
         soup = BeautifulSoup(pageData)
-        return soup.find(id = 'txtICN')
+        try:
+            IDCard = soup.find(id = 'txtICN').get('value')
+        except AttributeError:
+            return None
+        return IDCard
 
 if __name__ == '__main__':
     fetchtool = fetchIDCard()
     pageData = fetchtool.loginAndGetPage('1043111063', '1043111063')
-    print fetchtool.parsePage(pageData).get('value')
-
+    IDCard = fetchtool.parsePage(pageData)
+    print IDCard
     
